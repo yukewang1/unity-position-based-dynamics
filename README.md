@@ -4,9 +4,9 @@ Position-Based Dynamics was first proposed by Müller et al.【1】 as it provid
 In this project, we created two scenes based on Position-Based Dynamics in Unity. In the first scene, we created a plane to simulate a horizontal cloth with fixed four corners. We applied wind force and gravity to it to observe the deformation of the original plane. In the second scene, we created multiple particles to simulate changes in fluid particles. Both scenes involve creating a Unity playground, defining the physical properties of the cloth, as well as various tuning to define the constraints that govern its behavior.
 ## 2. Repo Structure
 - Assets/Scripts:
-    - ClothSimulation.cs: Scripts for cloth simulation scene.
+    - ClothSimulation: Scripts for cloth simulation scene.
       - Constraints.cs: Contains structures for constraints and the mesh.
-    - PBDModel.cs: The behavior model for the cloth in which vertices' positions are initialized and updated.
+      - PBDModel.cs: The behavior model for the cloth in which vertices' positions are initialized and updated.
 - demos: contains demo videos and gif files for two scenes.
 ## 3. Cloth Simulation Scene
 The cloth is positioned horizontally at the initial position. After pressing the play button, the plane will deform like cloth under the force of gravity and wind.
