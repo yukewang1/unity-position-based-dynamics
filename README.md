@@ -13,7 +13,7 @@ The cloth is positioned horizontally at the initial position. After pressing the
 In this demo, 2 parameters can be changed.   
 - Wind Force: By changing the Main property of the WindZone object, we can adjust the wind force in the environment. The demo shows the situation when wind force was changed from 1 to 5, then to 0.
 ![image](demos/cloth_simulation_demo/chang_wind_force.gif)
-- Shrink Coefficient: By changing the shrinkCoefficient property of the cloth object, the tightness of clothes can be adjusted. The smaller the shrinkCoefficient is, the looser the cloth is. The demo shows the situation that the shrink coefficient change from 10 to 5.
+- Shrink Coefficient: By changing the shrinkCoefficient property of the cloth object, the tightness of clothes can be adjusted. The smaller the shrinkCoefficient is, the looser the cloth is. The demo shows the situation that the shrink coefficient change from 10 to 5.  
 ![image](demos/cloth_simulation_demo/change_shrink_coefficient.gif)
 ## 4. Fluid Simulation Scene
 ## 5. Work Breakdown
