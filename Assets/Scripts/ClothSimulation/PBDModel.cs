@@ -12,28 +12,28 @@ namespace ClothSimulation
     public class PBDModel : MonoBehaviour
     {
         // Density of the cloth.
-        public float density = 0.2f;
+        private float density = 0.2f;
 
         // The iteration number to solve constraints.
-        public float solverIterations = 4;
+        private float solverIterations = 4;
 
         // The coefficient for the cloth to compress.
-        public float compressCoefficient = 1f;
+        public float shrinkCoefficient = 1f;
 
         // The coefficient for the cloth to stretch.
-        public float stretchCoefficient = 1f;
+        private float stretchCoefficient = 5f;
 
         // The coefficient for the cloth to bend.
-        public float bendCoefficient = 0.2f;
+        private float bendCoefficient = 0.2f;
 
         // The damping coefficient for the cloth.
-        public float dampCoefficient = 0.1f;
+        private float dampCoefficient = 0.01f;
 
         // Unit time
-        public float deltaT = 0.01f;
+        private float deltaT = 0.01f;
 
         // Coefficient for gravity
-        public Vector3 G;
+        private Vector3 G;
 
         public WindZone windZone;
 
@@ -314,7 +314,7 @@ namespace ClothSimulation
                 normals[i] = new Vector3(0f, 0f, 0f);
                 verticesPositions[i] = verticesPositions[i];
             }
-            for (int i = 0; i < Mathf.FloorToInt(durationTime / deltaT); i++)
+            for (int i = 0; i < (int)(durationTime / deltaT); i++)
             {
                 // Update normals
                 for (int j = 0; j < triangles.Length; j += 3)
@@ -405,10 +405,10 @@ namespace ClothSimulation
             Vector3[] deltaPositions = new Vector3[vertices.Length];
             for (int i = 0; i < solverIterations; i++)
             {
-                float di = 1.0f / (solverIterations - i);
-                double compressIt = 1 - System.Math.Pow(1 - compressCoefficient, 1.0f / solverIterations);
-                double stretchIt = 1 - System.Math.Pow(1 - stretchCoefficient, 1.0f / solverIterations);
-                double bendIt = 1 - System.Math.Pow(1 - bendCoefficient, 1.0f / solverIterations);
+                float subStep = 1.0f / solverIterations;
+                double shrinkIt = shrinkCoefficient * 1.0f / solverIterations;
+                double stretchIt = stretchCoefficient * 1.0f / solverIterations;
+                double bendIt = bendCoefficient * 1.0f / solverIterations;
                 for (int j = 0; j < vertices.Length; j++)
                 {
                     deltaPositions[j] = new Vector3(0f, 0f, 0f);
@@ -427,13 +427,13 @@ namespace ClothSimulation
                     Vector3 deltaP = new Vector3(0f, 0f, 0f);
                     if (length > cur.fixedLength)
                     {
-                        deltaP = (float)stretchIt * direction * (length - cur.fixedLength);
+                        deltaP = (float)shrinkIt * direction * (length - cur.fixedLength);
                     } else
                     {
-                        deltaP = (float)compressIt * direction * (length - cur.fixedLength);
+                        deltaP = (float)stretchIt * direction * (length - cur.fixedLength);
                     }
-                    deltaPositions[cur.index0] += deltaP * di * m1 / (m0 + m1);
-                    deltaPositions[cur.index1] -= deltaP * di * m0 / (m0 + m1);
+                    deltaPositions[cur.index0] += deltaP * subStep * m1 / (m0 + m1);
+                    deltaPositions[cur.index1] -= deltaP * subStep * m0 / (m0 + m1);
                 }
 
                 // Solve bending constraints
@@ -468,10 +468,10 @@ namespace ClothSimulation
                     
                     if (!double.IsNaN(a))
                     {
-                        Vector3 deltaP1 = (float)bendIt * w1 * q1 * di * (float)a / sum;
-                        Vector3 deltaP2 = (float)bendIt * w2 * q2 * di * (float)a / sum;
-                        Vector3 deltaP3 = (float)bendIt * w3 * q3 * di * (float)a / sum;
-                        Vector3 deltaP4 = (float)bendIt * w4 * q4 * di * (float)a / sum;
+                        Vector3 deltaP1 = (float)bendIt * w1 * q1 * subStep * (float)a / sum;
+                        Vector3 deltaP2 = (float)bendIt * w2 * q2 * subStep * (float)a / sum;
+                        Vector3 deltaP3 = (float)bendIt * w3 * q3 * subStep * (float)a / sum;
+                        Vector3 deltaP4 = (float)bendIt * w4 * q4 * subStep * (float)a / sum;
                         deltaPositions[cur.index0] += deltaP1;
                         deltaPositions[cur.index1] += deltaP2;
                         deltaPositions[cur.index2] += deltaP3;
@@ -523,6 +523,45 @@ namespace ClothSimulation
                 Debug.Log("More than two triangles share the same Edge.");
             }
             return isExist;
+        }
+
+        struct PredictPosition : IJobParallelFor
+        {
+            public NativeArray<Vector3> currentPositions;
+            [ReadOnly]
+            public Vector3 windForce;
+            [ReadOnly]
+            public float dampCoefficient;
+            [ReadOnly]
+            public NativeArray<float> masses;
+            // Vertice velocities
+            [ReadOnly]
+            public NativeArray<Vector3> velocities;
+            // Vertice current position
+            [ReadOnly]
+            public NativeArray<Vector3> verticesPositions;
+            // Vertice next position
+            [ReadOnly]
+            public NativeArray<Vector3> normals;
+            // Unit time
+            [ReadOnly]
+            public float deltaT;
+
+            // Coefficient for gravity
+            [ReadOnly]
+            public Vector3 G;
+            public void Execute(int i)
+            {
+                currentPositions[i] = new Vector3(0f, 0f, 0f);
+                Vector3 p = verticesPositions[i];
+                Vector3 v = velocities[i];
+                float m = masses[i];
+                Vector3 normal = normals[i];
+                Vector3 v_next = Vector3.Dot(windForce, normal) * normal * deltaT / m + G * deltaT + v;
+                v_next = v_next * Mathf.Max(1 - dampCoefficient, 0);
+                Vector3 p_next = p + v_next * deltaT;
+                currentPositions[i] = p_next;
+            }
         }
     }
 }

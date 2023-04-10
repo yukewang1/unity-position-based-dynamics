@@ -150,7 +150,7 @@ WindZone:
   m_Enabled: 1
   m_Mode: 0
   m_Radius: 20
-  m_WindMain: 2
+  m_WindMain: 1
   m_WindTurbulence: 1
   m_WindPulseMagnitude: 0.5
   m_WindPulseFrequency: 0.01
@@ -340,7 +340,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0.046522442, y: -0, z: -0, w: 0.9989173}
-  m_LocalPosition: {x: -0.3, y: 1.87, z: -12.32}
+  m_LocalPosition: {x: -0.3, y: 0.56, z: -12.44}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -443,12 +443,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdcaef341cdc60c4b981620de65d98b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  density: 0.2
-  solverIterations: 4
-  compressCoefficient: 1
-  stretchCoefficient: 1
-  bendCoefficient: 0.2
-  dampCoefficient: 0.1
-  deltaT: 0.01
-  G: {x: 0, y: 0, z: 0}
+  shrinkCoefficient: 10
   windZone: {fileID: 185878146}
