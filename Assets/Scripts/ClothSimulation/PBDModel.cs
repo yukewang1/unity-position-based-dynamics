@@ -27,7 +27,7 @@ namespace ClothSimulation
         private float bendCoefficient = 0.2f;
 
         // The damping coefficient for the cloth.
-        private float dampCoefficient = 0.01f;
+        private float dampCoefficient = 0.998f;
 
         // Unit time
         private float deltaT = 0.01f;
@@ -304,8 +304,6 @@ namespace ClothSimulation
             _velocities.CopyFrom(velocities);
             NativeArray<Vector3> _verticesPositions = new NativeArray<Vector3>(vertices.Length, Allocator.Persistent);
             _verticesPositions.CopyFrom(verticesPositions);
-            NativeArray<Vector3> _normals = new NativeArray<Vector3>(vertices.Length, Allocator.Persistent);
-            _normals.CopyFrom(normals);
             verticesPositions = mesh.vertices;
             durationTime += Time.deltaTime;
             windForce = windZone.transform.forward * windZone.windMain;
@@ -316,28 +314,10 @@ namespace ClothSimulation
             }
             for (int i = 0; i < (int)(durationTime / deltaT); i++)
             {
-                // Update normals
-                for (int j = 0; j < triangles.Length; j += 3)
-                {
-                    int vertice0 = triangles[j];
-                    int vertice1 = triangles[j + 1];
-                    int vertice2 = triangles[j + 2];
-                    Vector3 p0 = verticesPositions[vertice0];
-                    Vector3 p1 = verticesPositions[vertice1];
-                    Vector3 p2 = verticesPositions[vertice2];
-                    Vector3 n = Vector3.Normalize(Vector3.Cross(p1 - p0, p2 - p0));
-                    normals[vertice0] += n;
-                    normals[vertice1] += n;
-                    normals[vertice2] += n;
-                }
-                for (int j = 0; j < vertices.Length; j++)
-                {
-                    normals[j] = Vector3.Normalize(normals[j] * -1.0f);
-                }
                 NativeArray<Vector3> currrentPositions = new NativeArray<Vector3>(vertices.Length, Allocator.Persistent);
                 
                 // Predict positions
-                prePredictPositions(ref currrentPositions, _masses, _velocities, _verticesPositions, _normals);
+                prePredictPositions(ref currrentPositions, _masses, _velocities, _verticesPositions);
                 // Solve constraints
                 solveConstraints(ref currrentPositions);
                 for (int j = 0; j < vertices.Length; j++)
@@ -345,18 +325,12 @@ namespace ClothSimulation
                     velocities[j] = (currrentPositions[j] - verticesPositions[j]) / deltaT;
                     verticesPositions[j] = currrentPositions[j];
                 }
-                mesh.vertices = verticesPositions;
                 currrentPositions.Dispose();
             }
             durationTime = durationTime % deltaT;
             _masses.Dispose();
             _velocities.Dispose();
             _verticesPositions.Dispose();
-            _normals.Dispose();
-        }
-
-        void LateUpdate()
-        {
             mesh.SetVertices(verticesPositions);
             for (int i = 0; i < vertices.Length; i++)
             {
@@ -383,7 +357,7 @@ namespace ClothSimulation
             mesh.RecalculateBounds();
         }
 
-        public void prePredictPositions(ref NativeArray<Vector3> currentPositions, NativeArray<float> _masses, NativeArray<Vector3> _velocities, NativeArray<Vector3> _verticesPositions, NativeArray<Vector3> _normals)
+        public void prePredictPositions(ref NativeArray<Vector3> currentPositions, NativeArray<float> _masses, NativeArray<Vector3> _velocities, NativeArray<Vector3> _verticesPositions)
         {
             var jobData = new PredictPosition() { 
                 currentPositions = currentPositions,
@@ -392,7 +366,6 @@ namespace ClothSimulation
                 masses = _masses,
                 velocities = _velocities,
                 verticesPositions = _verticesPositions,
-                normals = _normals,
                 deltaT = deltaT,
                 G = G,
             };
@@ -405,10 +378,9 @@ namespace ClothSimulation
             Vector3[] deltaPositions = new Vector3[vertices.Length];
             for (int i = 0; i < solverIterations; i++)
             {
-                float subStep = 1.0f / solverIterations;
-                double shrinkIt = shrinkCoefficient * 1.0f / solverIterations;
-                double stretchIt = stretchCoefficient * 1.0f / solverIterations;
-                double bendIt = bendCoefficient * 1.0f / solverIterations;
+                double shrinkIt = shrinkCoefficient * 1.0f / System.Math.Pow((double)solverIterations, 2);
+                double stretchIt = stretchCoefficient * 1.0f / System.Math.Pow((double)solverIterations, 2);
+                double bendIt = bendCoefficient * 1.0f / System.Math.Pow((double)solverIterations, 2);
                 for (int j = 0; j < vertices.Length; j++)
                 {
                     deltaPositions[j] = new Vector3(0f, 0f, 0f);
@@ -432,8 +404,8 @@ namespace ClothSimulation
                     {
                         deltaP = (float)stretchIt * direction * (length - cur.fixedLength);
                     }
-                    deltaPositions[cur.index0] += deltaP * subStep * m1 / (m0 + m1);
-                    deltaPositions[cur.index1] -= deltaP * subStep * m0 / (m0 + m1);
+                    deltaPositions[cur.index0] += deltaP * m1 / (m0 + m1);
+                    deltaPositions[cur.index1] -= deltaP * m0 / (m0 + m1);
                 }
 
                 // Solve bending constraints
@@ -468,10 +440,10 @@ namespace ClothSimulation
                     
                     if (!double.IsNaN(a))
                     {
-                        Vector3 deltaP1 = (float)bendIt * w1 * q1 * subStep * (float)a / sum;
-                        Vector3 deltaP2 = (float)bendIt * w2 * q2 * subStep * (float)a / sum;
-                        Vector3 deltaP3 = (float)bendIt * w3 * q3 * subStep * (float)a / sum;
-                        Vector3 deltaP4 = (float)bendIt * w4 * q4 * subStep * (float)a / sum;
+                        Vector3 deltaP1 = (float)bendIt * w1 * q1 * (float)a / sum;
+                        Vector3 deltaP2 = (float)bendIt * w2 * q2 * (float)a / sum;
+                        Vector3 deltaP3 = (float)bendIt * w3 * q3 * (float)a / sum;
+                        Vector3 deltaP4 = (float)bendIt * w4 * q4 * (float)a / sum;
                         deltaPositions[cur.index0] += deltaP1;
                         deltaPositions[cur.index1] += deltaP2;
                         deltaPositions[cur.index2] += deltaP3;
@@ -541,8 +513,6 @@ namespace ClothSimulation
             [ReadOnly]
             public NativeArray<Vector3> verticesPositions;
             // Vertice next position
-            [ReadOnly]
-            public NativeArray<Vector3> normals;
             // Unit time
             [ReadOnly]
             public float deltaT;
@@ -556,9 +526,8 @@ namespace ClothSimulation
                 Vector3 p = verticesPositions[i];
                 Vector3 v = velocities[i];
                 float m = masses[i];
-                Vector3 normal = normals[i];
-                Vector3 v_next = Vector3.Dot(windForce, normal) * normal * deltaT / m + G * deltaT + v;
-                v_next = v_next * Mathf.Max(1 - dampCoefficient, 0);
+                Vector3 v_next = (windForce/ m + G) * deltaT + v;
+                v_next = v_next * dampCoefficient;
                 Vector3 p_next = p + v_next * deltaT;
                 currentPositions[i] = p_next;
             }
