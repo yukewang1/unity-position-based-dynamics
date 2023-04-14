@@ -67,13 +67,13 @@ namespace ClothSimulation
 
         void Awake()
         {
-            // Resize the mesh from the original 121 vertices to 289.
+            // Resize the mesh from the original 121 vertices to 400.
             Mesh originalMesh = GetComponent<MeshFilter>().mesh;
             int originalVertexCount = originalMesh.vertices.Length;
             Vector3[] oldVertices = originalMesh.vertices;
             int l = (int)System.Math.Sqrt((double)originalVertexCount);
             Mesh newMesh = new Mesh();
-            int newVertexCount = 289;
+            int newVertexCount = 400;
             int lNew = (int)System.Math.Sqrt((double)newVertexCount);
             Vector3[] newVertices = new Vector3[newVertexCount];
             int[] newTriangles = new int[(int)System.Math.Pow((double)(lNew - 1), 2) * 6];
