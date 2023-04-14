@@ -1,5 +1,7 @@
-# Retreived from https://github.com/github/gitignore/blob/main/Unity.gitignore
-# We are not the authors of this file
+# This file was retreived from https://github.com/github/gitignore/blob/main/Unity.gitignore
+# and adapted to the needs of this project. We didn't author this file from scratch.
+
+.vscode/
 
 # This .gitignore file should be placed at the root of your Unity project directory
 #
