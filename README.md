@@ -1,4 +1,7 @@
 # Position-Based Dynamics
+
+## Unity Setup
+To begin, open the current project folder unity-position-based-dynamics as a Unity project in Unity Hub and select 2021.3.16f1 as the editor version.
 ## 1. Introduction
 Position-Based Dynamics was first proposed by Müller et al.【1】 as it provides multiple benefits over traditional methods. Specifically, it is more stable, computationally efficient, less laggy, and would not overshoot or drift.  
 In this project, we created two scenes based on Position-Based Dynamics in Unity. In the first scene, we created a plane to simulate a horizontal cloth with fixed four corners. We applied wind force and gravity to it to observe the deformation of the original plane. In the second scene, we created multiple particles to simulate changes in fluid particles. Both scenes involve creating a Unity playground, defining the physical properties of the cloth, as well as various tuning to define the constraints that govern its behavior.
