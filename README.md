@@ -4,7 +4,7 @@ Group members: Jingshan Feng (jfa99), Yuke Wang (ywa390)
 
 ## Unity Setup
 
-To begin, open the current project folder unity-position-based-dynamics as a Unity project in Unity Hub and select 2021.3.16f1 as the editor version.
+To begin, kindly clone the repository, open it as a Unity project in Unity Hub and select editor version `2021.3.16f1`, which this project was developed with.
 
 ## Introduction
 
@@ -22,10 +22,11 @@ Both scenes involve creating a Unity playground, defining the physical objects, 
       - `Constraints.cs`: Contains structures for constraints and the mesh.
       - `PBDModel.cs`: The behavior model for the cloth in which vertices' positions are initialized and updated.
     - `FluidSimulation/`: Scripts for the fluid simulation scene.
-        - `HelperModules.cs`: TODO
-        - `PBFDemo.cs`: TODO
+        - `HelperModules.cs`: All helper classes used by `PBFDemo`, including a smoothing kernel, a spatial hashing module, a fluid solver definition, etc.
+        - `PBFDemo.cs`: Defines the actual fluid model attaching to an object, giving controls from the inspector.
 - `Demos/`: Contains demo videos and gif files for two scenes in their respective sub-directories.
     - `ClothSimulationDemo/ClothSimulationDemo.mp4`
+    - `FluidSimulationDemo/` TODO
 
 ## Cloth Simulation Scene
 
