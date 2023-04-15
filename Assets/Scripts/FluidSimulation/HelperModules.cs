@@ -117,9 +117,9 @@ namespace PBFHelperModules {
 
         private Vector3Int getCell(Vector3 particle) {
             return new Vector3Int(
-                (int)(particle.x / cellSize),
-                (int)(particle.y / cellSize),
-                (int)(particle.z / cellSize)
+                Mathf.CeilToInt(particle.x / cellSize),
+                Mathf.CeilToInt(particle.y / cellSize),
+                Mathf.CeilToInt(particle.z / cellSize)
             );
         }
     }
@@ -148,9 +148,9 @@ namespace PBFHelperModules {
             this.psi = new List<float>();
 
             Vector3 numParticles = new Vector3(
-                (int)(outerBox.width() / diameter),
-                (int)(outerBox.height() / diameter),
-                (int)(outerBox.depth() / diameter)
+                Mathf.CeilToInt(outerBox.width() / diameter),
+                Mathf.CeilToInt(outerBox.height() / diameter),
+                Mathf.CeilToInt(outerBox.depth() / diameter)
             );
 
             for (int x = 0; x < numParticles.x; x++) {
@@ -349,12 +349,13 @@ namespace PBFHelperModules {
         }
 
         private void initParticles() {
-            Vector3 numParticles = new Vector3(
-                (int)(fluidBounds.width() / diameter),
-                (int)(fluidBounds.height() / diameter),
-                (int)(fluidBounds.depth() / diameter)
+            Vector3Int numParticles = new Vector3Int(
+                Mathf.CeilToInt(fluidBounds.width() / diameter),
+                Mathf.CeilToInt(fluidBounds.height() / diameter),
+                Mathf.CeilToInt(fluidBounds.depth() / diameter)
             );
-            int numParticlesTotal = (int)(numParticles.x * numParticles.y * numParticles.z);
+            // Debug.Log(numParticles);
+            int numParticlesTotal = numParticles.x * numParticles.y * numParticles.z;
             positions = new Vector3[numParticlesTotal];
             predictedPositions = new Vector3[numParticlesTotal];
             velocities = new Vector3[numParticlesTotal];
@@ -364,7 +365,7 @@ namespace PBFHelperModules {
             for (int x = 0; x < numParticles.x; x++) {
                 for (int y = 0; y < numParticles.y; y++) {
                     for (int z = 0; z < numParticles.z; z++) {
-                        int idx = (int)(x * numParticles.y * numParticles.z + y * numParticles.z + z);
+                        int idx = x * numParticles.y * numParticles.z + y * numParticles.z + z;
                         Vector3 particle = new Vector3(
                             fluidBounds.min.x + x * diameter + radius,
                             fluidBounds.min.y + y * diameter + radius,
