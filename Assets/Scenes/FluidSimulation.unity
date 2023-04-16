@@ -152,18 +152,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72e501ecd11c5394ab93adf1a40da715, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dt: 0.02
+  dt: 0.0167
   radius: 0.2
-  viscosity: 0.02
+  viscosity: 0.2
   density: 1000
   massMultiplier: 6.4
-  iterations: 5
+  iterations: 10
   fluidBoundsMin: {x: -10, y: 0, z: 0}
   fluidBoundsMax: {x: -5, y: 7, z: 4}
   fluidMaterial: {fileID: 2100000, guid: db5a4b0e635ef8546adbea1edd0c3e84, type: 2}
   envBoundsMin: {x: -10, y: 0, z: -4}
   envBoundsMax: {x: 5, y: 10, z: 4}
-  boundaryLayers: 2
+  boundaryLayers: 1
 --- !u!4 &282662995
 Transform:
   m_ObjectHideFlags: 0
@@ -349,14 +349,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.08715578, y: 0, z: 0, w: 0.9961947}
-  m_LocalPosition: {x: -3, y: 6, z: -13}
+  m_LocalRotation: {x: 0.043619405, y: 0, z: 0, w: 0.9990483}
+  m_LocalPosition: {x: -2.5, y: 6, z: -13}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 10, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 5, y: 0, z: 0}
 --- !u!1 &1108315705
 GameObject:
   m_ObjectHideFlags: 0
